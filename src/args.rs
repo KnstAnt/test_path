@@ -17,22 +17,7 @@ fn spawn_stdin_channel() -> Receiver<String> {
 }
 //
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Path {
-    pub host: String,
-    pub port: i32,
-}
-//
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Params {
-    #[serde(alias = "ship-id")]
-    pub ship_id: i32,
-    #[serde(alias = "project-id")]
-    pub project_id: Option<i32>,
-}
-//
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Message {
-    #[serde(alias = "api-address")]
     pub path: String,
     pub name: String,
 }
@@ -43,13 +28,13 @@ pub fn get_args() -> Result<Message, Error> {
     thread::sleep(time::Duration::from_millis(100));
     match stdin_channel.try_recv() {
         Ok(input) => {
-            print!("read from stdin: {input}");
+            println!("read from stdin: {input}");
             message = serde_json::from_str(&input)?;
-            print!("io::stdin(): {:?}", message);
+            println!("io::stdin(): {:?}", message);
             return Ok(message);
         }
         Err(error) => {
-            print!("error read from stdin!: {error}");
+            println!("error read from stdin!: {error}");
             return Err(Error::FromString(format!("error read from stdin!: {error}")));
         }
     }
