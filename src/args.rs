@@ -23,19 +23,21 @@ pub struct Message {
 }
 //
 pub fn get_args() -> Result<Message, Error> {
-    let message: Message;
     let stdin_channel = spawn_stdin_channel();
-    thread::sleep(time::Duration::from_millis(1000));
-    match stdin_channel.try_recv() {
-        Ok(input) => {
-            println!("read from stdin: {input}");
-            message = serde_json::from_str(&input)?;
-            println!("io::stdin(): {:?}", message);
-            return Ok(message);
-        }
-        Err(error) => {
-            println!("error read from stdin!: {error}");
-            return Err(Error::FromString(format!("error read from stdin!: {error}")));
+    for _ in 0..50 {
+        match stdin_channel.try_recv() {
+            Ok(input) => {
+                println!("read from stdin: {input}");
+                let message = serde_json::from_str(&input)?;
+                println!("io::stdin(): {:?}", message);
+                return Ok(message);
+            }
+            Err(_) => {
+                thread::sleep(time::Duration::from_millis(100));
+                continue;
+            }
         }
     }
+    println!("error read from stdin!");
+    return Err(Error::FromString(format!("error read from stdin!")));
 }
