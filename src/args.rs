@@ -25,7 +25,7 @@ pub struct Message {
 pub fn get_args() -> Result<Message, Error> {
     let message: Message;
     let stdin_channel = spawn_stdin_channel();
-    thread::sleep(time::Duration::from_millis(100));
+    thread::sleep(time::Duration::from_millis(1000));
     match stdin_channel.try_recv() {
         Ok(input) => {
             println!("read from stdin: {input}");
